@@ -1,0 +1,59 @@
+---
+title: "433 hw-week3 draft1"
+name: RUOHE ZHOU
+output:
+  github_document
+---
+```{r}
+library(nycflights13)
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+head(flights)
+```
+
+```{r}
+#1
+count(filter(flights, is.na(dep_time)))
+
+```
+8255 flights have a missing dep_time. 
+These rows might represent the flights that have been canceled. 
+
+```{r}
+#2
+transmute(flights,
+  dep_time,
+  hour = dep_time %/% 100,
+  minute = dep_time %% 100
+)
+```
+
+```{r}
+#(3)
+
+```
+
+```{r}
+avg_delay <- flights %>%
+  group_by(year, month, day) %>%
+  summarize(average_delay = mean(arr_delay, na.rm = TRUE))
+
+canceled_perday <- flights %>%
+  filter(is.na(dep_time)) %>%
+  group_by(year, month, day) %>%
+  summarise(canceled_per_day = n()) 
+
+df <- merge(avg_delay, canceled_perday, by = c('year', 'month', 'day'))
+
+df
+#ggplot(aes(x = df$average_delay, y = df$canceled_per_day)) + geom_point()
+```
+
+```{r}
+ggplot(df) + geom_point(aes(x = average_delay, y = canceled_per_day))
+```
+
+The average delay and the number of flights canceled per day seem to be positively correlated. 
