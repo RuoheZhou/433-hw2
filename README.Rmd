@@ -41,19 +41,25 @@ avg_delay <- flights %>%
   group_by(year, month, day) %>%
   summarize(average_delay = mean(arr_delay, na.rm = TRUE))
 
+overall <- flights %>%
+  group_by(year, month, day) %>%
+  summarize(overall_perday = n())
+
 canceled_perday <- flights %>%
   filter(is.na(dep_time)) %>%
   group_by(year, month, day) %>%
   summarise(canceled_per_day = n()) 
 
-df <- merge(avg_delay, canceled_perday, by = c('year', 'month', 'day'))
+df <- merge(avg_delay, canceled_perday,by = c('year', 'month', 'day'))
 
-df
+df <- merge(df, overall, by = c('year', 'month', 'day'))
+df <- df %>%
+  mutate(prop = canceled_per_day / overall_perday)
 #ggplot(aes(x = df$average_delay, y = df$canceled_per_day)) + geom_point()
 ```
 
 ```{r}
-ggplot(df) + geom_point(aes(x = average_delay, y = canceled_per_day))
+ggplot(df) + geom_point(aes(x = average_delay, y = prop))
 ```
 
 The average delay and the number of flights canceled per day seem to be positively correlated. 
