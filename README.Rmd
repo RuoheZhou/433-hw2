@@ -2,7 +2,7 @@
 title: "433 hw-week3 draft1"
 name: RUOHE ZHOU
 output:
-  github_document
+  html_document
 ---
 ```{r}
 library(nycflights13)
@@ -29,14 +29,15 @@ transmute(flights,
   hour = dep_time %/% 100,
   minute = dep_time %% 100
 )
+
+flights %>%
+  mutate(dep_time_minutes = dep_time %/% 100 * 60 + dep_time %% 100) %>%
+  mutate(sched_dep_time_minutes= sched_dep_time %/% 100 * 60 + sched_dep_time %% 100) %>%
+  select(dep_time_minutes, sched_dep_time_minutes)
 ```
 
 ```{r}
 #(3)
-
-```
-
-```{r}
 avg_delay <- flights %>%
   group_by(year, month, day) %>%
   summarize(average_delay = mean(arr_delay, na.rm = TRUE))
